@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<libraries>
+    <library>
+        <location>classes/owncloud_client.php</location>
+        <name>webdav_client (Polyfill for OAuth modification for 3.4)</name>
+        <version>0.1.5</version>
+        <license>GNU LGPL</license>
+    </library>
+</libraries>

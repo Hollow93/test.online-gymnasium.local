@@ -4,6 +4,8 @@ services:
     build: mysql
     env_file:
       - envs/common.env
+    ports:
+      - "3306:3306"
     volumes:
       - ./envs:/envs
       - ./data/moodle-mysql:/var/lib/mysql
@@ -14,9 +16,22 @@ services:
     env_file:
       - envs/common.env
     ports:
+      - "2222:22"
+      - "35729:35729" # live reload
       - "80:80"
       - "443:443"
+    expose:
+       - "9001"
+    environment:
+      PHP_XDEBUG_ENABLED: 1 # Set 1 to enable.
+      XDEBUG_CONFIG: "remote_host=10.0.75.1"
+      PHP_IDE_CONFIG: "serverName=OnAgile"
     volumes:
       - ./envs:/envs
       - ./data/letsencrypt:/etc/letsencrypt
-      - ./data/moodle-moodledata:/var/moodledata
+      -  ./data/moodle-moodledata:/var/moodledata
+      - ./provision/etc/apache2/sites-enabled:/etc/apache2/sites-enabled/
+      - .:/application
+      - ./provision/etc/php/7.0/apache2/conf.d/99-overrides.ini:/etc/php/7.0/apache2/conf.d/99-overrides.ini
+      - ./provision/etc/php/7.0/cli/conf.d/99-overrides.ini:/etc/php/7.0/cli/conf.d/99-overrides.ini
+

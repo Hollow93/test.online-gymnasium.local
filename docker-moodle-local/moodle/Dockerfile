@@ -129,7 +129,7 @@ RUN cd /var/www/html/blocks \
     && unzip block_category_enrol.zip \
     && mv moodle-block_category_enrol* category_enrol \
     && rm block_category_enrol.zip
-    
+
 # Install Easy Enrollments - enrol/easy version 1.1 from https://moodle.org/plugins/enrol_easy
 RUN cd /var/www/html/enrol \
     && curl -L https://moodle.org/plugins/download.php/14067/enrol_easy_moodle34_2017052300.zip -o enrol_easy.zip \
@@ -180,6 +180,20 @@ RUN wget https://moodle.org/plugins/download.php/15063/moosh_moodle33_2017101600
 COPY config/ /config
 COPY configure.sh /configure.sh
 RUN chmod a+x /configure.sh
+
+RUN echo "ServerName test.online-gymnasium.local" >> /etc/apache2/apache2.conf
+RUN echo "127.0.0.1 test.onagile.local" >> /etc/hosts
+
+
+# Install all apt dependencies
+RUN apt-get update \
+    && apt-key adv --keyserver "hkp://keyserver.ubuntu.com:80" --recv 'E5267A6C' \
+    && LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php \
+    && apt-get update \
+    && apt-get install -y \
+        php7.0-xdebug \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/www/html
 
 EXPOSE 80 443
 
