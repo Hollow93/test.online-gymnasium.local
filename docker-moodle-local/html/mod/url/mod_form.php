@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * webinar configuration form
+ * URL configuration form
  *
- * @package    mod_webinar
+ * @package    mod_url
  * @copyright  2009 Petr Skoda  {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,14 +26,14 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once ($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/webinar/locallib.php');
+require_once($CFG->dirroot.'/mod/url/locallib.php');
 
-class mod_webinar_mod_form extends moodleform_mod {
+class mod_url_mod_form extends moodleform_mod {
     function definition() {
         global $CFG, $DB;
         $mform = $this->_form;
 
-        $config = get_config('webinar');
+        $config = get_config('url');
 
         //-------------------------------------------------------
         $mform->addElement('header', 'general', get_string('general', 'form'));
@@ -45,7 +45,7 @@ class mod_webinar_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addElement('url', 'externalurl', get_string('externalurl', 'webinar'), array('size'=>'60'), array('usefilepicker'=>true));
+        $mform->addElement('url', 'externalurl', get_string('externalurl', 'url'), array('size'=>'60'), array('usefilepicker'=>true));
         $mform->setType('externalurl', PARAM_RAW_TRIMMED);
         $mform->addRule('externalurl', null, 'required', null, 'client');
         $this->standard_intro_elements();
@@ -67,20 +67,20 @@ class mod_webinar_mod_form extends moodleform_mod {
             reset($options);
             $mform->setDefault('display', key($options));
         } else {
-            $mform->addElement('select', 'display', get_string('displayselect', 'webinar'), $options);
+            $mform->addElement('select', 'display', get_string('displayselect', 'url'), $options);
             $mform->setDefault('display', $config->display);
-            $mform->addHelpButton('display', 'displayselect', 'webinar');
+            $mform->addHelpButton('display', 'displayselect', 'url');
         }
 
         if (array_key_exists(RESOURCELIB_DISPLAY_POPUP, $options)) {
-            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'webinar'), array('size'=>3));
+            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'url'), array('size'=>3));
             if (count($options) > 1) {
                 $mform->disabledIf('popupwidth', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
             }
             $mform->setType('popupwidth', PARAM_INT);
             $mform->setDefault('popupwidth', $config->popupwidth);
 
-            $mform->addElement('text', 'popupheight', get_string('popupheight', 'webinar'), array('size'=>3));
+            $mform->addElement('text', 'popupheight', get_string('popupheight', 'url'), array('size'=>3));
             if (count($options) > 1) {
                 $mform->disabledIf('popupheight', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
             }
@@ -91,7 +91,7 @@ class mod_webinar_mod_form extends moodleform_mod {
         if (array_key_exists(RESOURCELIB_DISPLAY_AUTO, $options) or
           array_key_exists(RESOURCELIB_DISPLAY_EMBED, $options) or
           array_key_exists(RESOURCELIB_DISPLAY_FRAME, $options)) {
-            $mform->addElement('checkbox', 'printintro', get_string('printintro', 'webinar'));
+            $mform->addElement('checkbox', 'printintro', get_string('printintro', 'url'));
             $mform->disabledIf('printintro', 'display', 'eq', RESOURCELIB_DISPLAY_POPUP);
             $mform->disabledIf('printintro', 'display', 'eq', RESOURCELIB_DISPLAY_OPEN);
             $mform->disabledIf('printintro', 'display', 'eq', RESOURCELIB_DISPLAY_NEW);
@@ -99,8 +99,8 @@ class mod_webinar_mod_form extends moodleform_mod {
         }
 
         //-------------------------------------------------------
-        $mform->addElement('header', 'parameterssection', get_string('parametersheader', 'webinar'));
-        $mform->addElement('static', 'parametersinfo', '', get_string('parametersheader_help', 'webinar'));
+        $mform->addElement('header', 'parameterssection', get_string('parametersheader', 'url'));
+        $mform->addElement('static', 'parametersinfo', '', get_string('parametersheader_help', 'url'));
 
         if (empty($this->current->parameters)) {
             $parcount = 5;
@@ -108,7 +108,7 @@ class mod_webinar_mod_form extends moodleform_mod {
             $parcount = 5 + count(unserialize($this->current->parameters));
             $parcount = ($parcount > 100) ? 100 : $parcount;
         }
-        $options = webinar_get_variable_options($config);
+        $options = url_get_variable_options($config);
 
         for ($i=0; $i < $parcount; $i++) {
             $parameter = "parameter_$i";
@@ -118,7 +118,7 @@ class mod_webinar_mod_form extends moodleform_mod {
                 $mform->createElement('text', $parameter, '', array('size'=>'12')),
                 $mform->createElement('selectgroups', $variable, '', $options),
             );
-            $mform->addGroup($group, $pargroup, get_string('parameterinfo', 'webinar'), ' ', false);
+            $mform->addGroup($group, $pargroup, get_string('parameterinfo', 'url'), ' ', false);
             $mform->setType($parameter, PARAM_RAW);
         }
 
@@ -156,33 +156,33 @@ class mod_webinar_mod_form extends moodleform_mod {
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        // Validating Entered webinar, we are looking for obvious problems only,
+        // Validating Entered url, we are looking for obvious problems only,
         // teachers are responsible for testing if it actually works.
 
         // This is not a security validation!! Teachers are allowed to enter "javascript:alert(666)" for example.
 
-        // NOTE: do not try to explain the difference between webinar and URI, people would be only confused...
+        // NOTE: do not try to explain the difference between URL and URI, people would be only confused...
 
         if (!empty($data['externalurl'])) {
-            $webinar = $data['externalurl'];
-            if (preg_match('|^/|', $webinar)) {
+            $url = $data['externalurl'];
+            if (preg_match('|^/|', $url)) {
                 // links relative to server root are ok - no validation necessary
 
-            } else if (preg_match('|^[a-z]+://|i', $webinar) or preg_match('|^https?:|i', $webinar) or preg_match('|^ftp:|i', $webinar)) {
-                // normal webinar
-                if (!webinar_appears_valid_webinar($webinar)) {
-                    $errors['externalurl'] = get_string('invalidwebinar', 'webinar');
+            } else if (preg_match('|^[a-z]+://|i', $url) or preg_match('|^https?:|i', $url) or preg_match('|^ftp:|i', $url)) {
+                // normal URL
+                if (!url_appears_valid_url($url)) {
+                    $errors['externalurl'] = get_string('invalidurl', 'url');
                 }
 
-            } else if (preg_match('|^[a-z]+:|i', $webinar)) {
+            } else if (preg_match('|^[a-z]+:|i', $url)) {
                 // general URI such as teamspeak, mailto, etc. - it may or may not work in all browsers,
                 // we do not validate these at all, sorry
 
             } else {
                 // invalid URI, we try to fix it by adding 'http://' prefix,
                 // relative links are NOT allowed because we display the link on different pages!
-                if (!webinar_appears_valid_webinar('http://'.$webinar)) {
-                    $errors['externalurl'] = get_string('invalidwebinar', 'webinar');
+                if (!url_appears_valid_url('http://'.$url)) {
+                    $errors['externalurl'] = get_string('invalidurl', 'url');
                 }
             }
         }
