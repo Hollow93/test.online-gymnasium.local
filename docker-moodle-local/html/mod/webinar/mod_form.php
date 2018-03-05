@@ -54,6 +54,61 @@ class mod_webinar_mod_form extends moodleform_mod {
         $attributes['rows'] = 5;
         $element->setAttributes($attributes);
         //-------------------------------------------------------
+
+
+        $mform->addElement('header', 'availability', get_string('availability', 'assign'));
+        $mform->setExpanded('availability', true);
+
+        $name = get_string('allowsubmissionsfromdate', 'assign');
+        $options = array('optional'=>true);
+        $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
+        $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'assign');
+
+        $name = get_string('duedate', 'assign');
+        $mform->addElement('date_time_selector', 'duedate', $name, array('optional'=>true));
+        $mform->addHelpButton('duedate', 'duedate', 'assign');
+
+        $name = get_string('cutoffdate', 'assign');
+        $mform->addElement('date_time_selector', 'cutoffdate', $name, array('optional'=>true));
+        $mform->addHelpButton('cutoffdate', 'cutoffdate', 'assign');
+
+        $name = get_string('gradingduedate', 'assign');
+        $mform->addElement('date_time_selector', 'gradingduedate', $name, array('optional' => true));
+        $mform->addHelpButton('gradingduedate', 'gradingduedate', 'assign');
+
+        $name = get_string('alwaysshowdescription', 'assign');
+        $mform->addElement('checkbox', 'alwaysshowdescription', $name);
+        $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'assign');
+        $mform->disabledIf('alwaysshowdescription', 'allowsubmissionsfromdate[enabled]', 'notchecked');
+
+
+        //------------------------------------------------------
+
+        // Plagiarism enabling form.
+        if (!empty($CFG->enableplagiarism)) {
+            require_once($CFG->libdir . '/plagiarismlib.php');
+            plagiarism_get_form_elements_module($mform, $ctx->get_course_context(), 'mod_assign');
+        }
+
+        $this->standard_grading_coursemodule_elements();
+        $name = get_string('blindmarking', 'assign');
+        $mform->addElement('selectyesno', 'blindmarking', $name);
+        $mform->addHelpButton('blindmarking', 'blindmarking', 'assign');
+//        if ($assignment->has_submissions_or_grades() ) {
+//            $mform->freeze('blindmarking');
+//        }
+
+        $name = get_string('markingworkflow', 'assign');
+        $mform->addElement('selectyesno', 'markingworkflow', $name);
+        $mform->addHelpButton('markingworkflow', 'markingworkflow', 'assign');
+
+        $name = get_string('markingallocation', 'assign');
+        $mform->addElement('selectyesno', 'markingallocation', $name);
+        $mform->addHelpButton('markingallocation', 'markingallocation', 'assign');
+        $mform->disabledIf('markingallocation', 'markingworkflow', 'eq', 0);
+
+
+        //------------------------------------------------------
         $mform->addElement('header', 'optionssection', get_string('appearance'));
 
         if ($this->current->instance) {
