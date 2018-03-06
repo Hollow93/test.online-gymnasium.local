@@ -812,7 +812,7 @@ abstract class moodleform_mod extends moodleform {
                               'canrescale' => $this->_features->canrescale,
                               'useratings' => $this->_features->rating);
 
-        if ($this->_features->hasgrades) {
+//        if ($this->_features->hasgrades) {
 
             if (!$this->_features->rating || $this->_features->gradecat) {
                 $mform->addElement('header', 'modstandardgrade', get_string('grade'));
@@ -890,7 +890,7 @@ abstract class moodleform_mod extends moodleform {
                 $mform->disabledIf('gradepass', 'assessed', 'eq', '0');
             }
         }
-    }
+//    }
 
     /**
      * Add an editor for an activity's introduction field.

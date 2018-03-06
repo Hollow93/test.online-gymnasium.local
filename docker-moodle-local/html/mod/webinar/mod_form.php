@@ -31,7 +31,6 @@ require_once($CFG->dirroot.'/mod/assign/locallib.php');
 
 class mod_webinar_mod_form extends moodleform_mod {
     function definition() {
-        global $CFG, $DB;
         $mform = $this->_form;
 
         $config = get_config('webinar');
@@ -84,7 +83,7 @@ class mod_webinar_mod_form extends moodleform_mod {
 
 
         //------------------------------------------------------
-      //  require_once($CFG->libdir . '/locallib.php');
+
         $ctx = null;
         if ($this->current && $this->current->coursemodule) {
             $cm = get_coursemodule_from_instance('assign', $this->current->id, 0, false, MUST_EXIST);
@@ -111,9 +110,9 @@ class mod_webinar_mod_form extends moodleform_mod {
         $name = get_string('blindmarking', 'assign');
         $mform->addElement('selectyesno', 'blindmarking', $name);
         $mform->addHelpButton('blindmarking', 'blindmarking', 'assign');
-//        if ($assignment->has_submissions_or_grades() ) {
-//            $mform->freeze('blindmarking');
-//        }
+        if ($assignment->has_submissions_or_grades() ) {
+            $mform->freeze('blindmarking');
+        }
 
         $name = get_string('markingworkflow', 'assign');
         $mform->addElement('selectyesno', 'markingworkflow', $name);
@@ -123,6 +122,7 @@ class mod_webinar_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'markingallocation', $name);
         $mform->addHelpButton('markingallocation', 'markingallocation', 'assign');
         $mform->disabledIf('markingallocation', 'markingworkflow', 'eq', 0);
+
 
 
         //------------------------------------------------------
