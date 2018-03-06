@@ -83,13 +83,29 @@ class mod_webinar_mod_form extends moodleform_mod {
 
 
         //------------------------------------------------------
-
-        // Plagiarism enabling form.
-        if (!empty($CFG->enableplagiarism)) {
-            require_once($CFG->libdir . '/plagiarismlib.php');
-            plagiarism_get_form_elements_module($mform, $ctx->get_course_context(), 'mod_assign');
+      //  require_once($CFG->libdir . '/locallib.php');
+        $ctx = null;
+        if ($this->current && $this->current->coursemodule) {
+            $cm = get_coursemodule_from_instance('assign', $this->current->id, 0, false, MUST_EXIST);
+            $ctx = context_module::instance($cm->id);
+        }
+        $assignment = new assign($ctx, null, null);
+        if ($this->current && $this->current->course) {
+            if (!$ctx) {
+                $ctx = context_course::instance($this->current->course);
+            }
+            $course = $DB->get_record('course', array('id'=>$this->current->course), '*', MUST_EXIST);
+            $assignment->set_course($course);
         }
 
+        // Plagiarism enabling form.
+
+        if (!empty($CFG->enableplagiarism)) {
+
+            require_once($CFG->libdir . '/plagiarismlib.php');
+            plagiarism_get_form_elements_module($mform, $ctx->get_course_context(), 'mod_assign');
+
+        }
         $this->standard_grading_coursemodule_elements();
         $name = get_string('blindmarking', 'assign');
         $mform->addElement('selectyesno', 'blindmarking', $name);
