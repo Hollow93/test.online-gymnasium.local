@@ -24,7 +24,7 @@ services:
        - "9001"
     environment:
       PHP_XDEBUG_ENABLED: 1 # Set 1 to enable.
-      XDEBUG_CONFIG: "remote_host=10.0.75.1"
+      XDEBUG_CONFIG: "remote_host=172.23.75.193"
       PHP_IDE_CONFIG: "serverName=OnAgile"
     volumes:
       - ./envs:/envs

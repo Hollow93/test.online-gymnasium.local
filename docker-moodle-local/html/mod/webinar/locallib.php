@@ -110,7 +110,7 @@ function webinar_get_full_webinar($webinar, $cm, $course, $config=null) {
 
         foreach ($parameters as $parse=>$parameter) {
             if (isset($paramvalues[$parameter])) {
-                $parameters[$parse] = rawwebinarencode($parse).'='.rawwebinarencode($paramvalues[$parameter]);
+                $parameters[$parse] = rawurlencode($parse).'='.rawurlencode($paramvalues[$parameter]);
             } else {
                 unset($parameters[$parse]);
             }
@@ -139,7 +139,7 @@ function webinar_get_full_webinar($webinar, $cm, $course, $config=null) {
  * @return string
  */
 function webinar_filter_callback($matches) {
-    return rawwebinarencode($matches[0]);
+    return rawurlencode($matches[0]);
 }
 
 /**
